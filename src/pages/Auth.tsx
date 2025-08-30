@@ -92,27 +92,21 @@ const Auth = () => {
   const handleResendConfirmation = async () => {
     setResendLoading(true);
     try {
-      // Supabase does not have a direct resend confirmation API, so we trigger password reset as workaround
-      // This will send a magic link if the user is unconfirmed
-      const response = await fetch('https://kjjpfhunthmqcawiolck.supabase.co/auth/v1/recover', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqanBmaHVudGhtcWNhd2lvbGNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNjE0OTMsImV4cCI6MjA3MTkzNzQ5M30.xv8QqKIs38G3tliyponK9Andj5wb4S95mHdRNp8xyh8'
-        },
-        body: JSON.stringify({ email })
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
       });
-      if (response.ok) {
+      
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
         toast({
           title: 'Confirmation Email Sent',
           description: 'Please check your email for the confirmation link.',
-        });
-      } else {
-        const data = await response.json().catch(() => ({}));
-        toast({
-          title: 'Error',
-          description: data?.msg || 'Could not resend confirmation email.',
-          variant: 'destructive',
         });
       }
     } catch (error) {

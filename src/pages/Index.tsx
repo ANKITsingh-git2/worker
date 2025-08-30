@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -17,7 +18,7 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { toast } from '@/hooks/use-toast';
 
 interface JobListProps {
@@ -118,7 +119,7 @@ const JobList = ({ userProfile, showMyJobs = false }: JobListProps) => {
       // Send WhatsApp notification
       if (jobData?.profiles?.phone) {
         try {
-          const fnResp = await supabase.functions.invoke('send-whatsapp-notification', {
+          const { data: fnResp, error: fnError } = await supabase.functions.invoke('send-whatsapp-notification', {
             body: {
               manufacturerPhone: jobData.profiles.phone,
               workerName: userProfile.name,
@@ -127,13 +128,10 @@ const JobList = ({ userProfile, showMyJobs = false }: JobListProps) => {
             },
           });
 
-          // supabase.functions.invoke returns { data, error, status } depending on client version
-          if ((fnResp as any)?.error) {
-            console.error('WhatsApp function error:', (fnResp as any).error);
-          }
-          // If the function returned a non-2xx HTTP status, log it
-          if ((fnResp as any)?.status && ((fnResp as any).status < 200 || (fnResp as any).status >= 300)) {
-            console.warn('WhatsApp function returned non-2xx status:', (fnResp as any).status, fnResp);
+          if (fnError) {
+            console.error('WhatsApp function error:', fnError);
+          } else {
+            console.log('WhatsApp notification sent:', fnResp);
           }
         } catch (notificationError) {
           console.error('WhatsApp notification failed:', notificationError);
@@ -158,7 +156,7 @@ const JobList = ({ userProfile, showMyJobs = false }: JobListProps) => {
   };
 
   if (loading) {
-    return <div>Loading jobs...</div>;
+    return <LoadingSpinner />;
   }
 
   return (

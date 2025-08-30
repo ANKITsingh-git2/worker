@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { toast } from '@/hooks/use-toast';
 
 interface ApplicationsListProps {
@@ -47,7 +48,7 @@ const ApplicationsList = ({ userProfile }: ApplicationsListProps) => {
   };
 
   if (loading) {
-    return <div>Loading applications...</div>;
+    return <LoadingSpinner />;
   }
 
   return (

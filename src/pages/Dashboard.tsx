@@ -9,6 +9,7 @@ import JobList from '@/components/JobList';
 import CreateJob from '@/components/CreateJob';
 import ProfileSetup from '@/components/ProfileSetup';
 import ApplicationsList from '@/components/ApplicationsList';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
@@ -62,6 +63,8 @@ const Dashboard = () => {
               name: meta.name || user?.email || null,
               phone: meta.phone || null,
               location: meta.location || null,
+            setLoading(false);
+            return;
               user_type: meta.user_type || 'gig_worker',
             };
 
@@ -110,7 +113,6 @@ const Dashboard = () => {
         setProfile(data);
       }
     } catch (error) {
-      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -119,7 +121,6 @@ const Dashboard = () => {
   const handleSignOut = async () => {
     const { error } = await signOut();
     if (error) {
-      toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
@@ -132,7 +133,12 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <LoadingSpinner size="lg" />
+    toast({
+      title: 'Error',
+      description: 'Failed to load profile data',
+      variant: 'destructive',
+    });
       </div>
     );
   }
